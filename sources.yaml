@@ -1,0 +1,29 @@
+- hosts: 3.237.87.37
+  gather_facts: no
+  remote_user: ec2-user
+  become: yes
+  tasks:
+  - name: yum update
+    yum:
+      name: "*"
+      state: latest
+  - name: installing java
+    yum: 
+      name: java-1.8.0
+      state: present
+  - name: Download Nexus
+    get_url:
+      url: https://download.sonatype.com/nexus/3/nexus-3.44.0-01-unix.tar.gz
+      dest: /opt
+      mode: '777'
+  - name: Extract
+    unarchive: 
+      src: /opt/nexus-3.44.0-01-unix.tar.gz
+      dest: /opt
+      remote_src: yes
+      mode: '777'
+  - name: switch to root user
+    shell: sudo su -
+  - name: start
+    shell: nohup /opt/nexus-3.44.0-01-unix/bin/./nexus start &
+
